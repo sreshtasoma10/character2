@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import io
-import pdfplumber  # ✅ replacing fitz with pdfplumber
+from pypdf import PdfReader  # ✅ replacing fitz/pdfplumber with pypdf
 import google.generativeai as genai
 import os
 import re
@@ -28,10 +28,10 @@ pdf_files = [
 few_shot_examples_text = ""
 for pdf_file in pdf_files:
     try:
-        with pdfplumber.open(pdf_file) as pdf:
-            for page in pdf.pages:
-                page_text = page.extract_text() or ""
-                few_shot_examples_text += page_text
+        reader = PdfReader(pdf_file)
+        for page in reader.pages:
+            text = page.extract_text() or ""
+            few_shot_examples_text += text
     except Exception as e:
         st.error(f"Error reading {pdf_file}: {e}")
         st.stop()
